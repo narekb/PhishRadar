@@ -1,20 +1,12 @@
 certstream_url: wss://certstream.calidog.io/
 keywords:
-  - armenia
-  - news
-  - gov
-  - am
-  - government
-  - mod
-  - police
-  - ministry
-  - army
-  - deepseek
-  - com
-
-threshold: 2
+  - test
+  - keyword
+  - yourbrand
+whitelist:
+  - exclude
+  - these
+threshold: 1
 output:
   console: True
-  file: output.log # TODO: Implement
-  webhook:         # TODO: Implement
-    url: WEBHOOK_URL_HERE
+  #file: output.log   # Uncomment to enable file logging

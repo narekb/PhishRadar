@@ -5,6 +5,7 @@ DEFAULT_THRESHOLD = 1
 #Configuration attributes
 ATTR_CERTSTREAM_URL = "certstream_url"
 ATTR_KEYWORDS = "keywords"
+ATTR_WHITELIST = "whitelist"
 ATTR_OUTPUT = "output"
 ATTR_OUTPUT_CONSOLE = "console"
 ATTR_OUTPUT_FILE = "file"

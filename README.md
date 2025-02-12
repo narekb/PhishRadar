@@ -27,13 +27,13 @@ keywords:
   - gov
   - police
   - ministry
-
+whitelist:
+  - exclude
+  - these
 threshold: 1
 output:
   console: True
-  file: output.log # TODO: Implement
-  webhook:         # TODO: Implement
-    url: WEBHOOK_URL_HERE
+  file: output.log
 ```
 
 ## Further work

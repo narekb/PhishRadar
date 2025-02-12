@@ -24,11 +24,9 @@ class Processor(object):
                 matches.add(keyword)
 
         # ...otherwise, proceed with Wordsegment
-        segments = wordsegment.segment(str(domain).replace(".", " ").replace("-", " "))
+        segments = wordsegment.segment(str(domain).lower().replace(".", " ").replace("-", " "))
 
         matches.union(set(self.keyword_scores.keys()).intersection(set(segments)))
-        if len(matches) > 0:
-            print(f"{domain} ==> {matches}")
         if len(matches) >= self.threshold:
             return matches
         else:
