@@ -1,6 +1,7 @@
 from .constants import RARE_KW_SCORE
 import wordsegment
 
+
 class Processor(object):
     threshold = 1
     keyword_scores = {}
@@ -14,7 +15,7 @@ class Processor(object):
         # This violation of private variable convention is a necessary evil.
         for keyword in keywords:
             self.keyword_scores[keyword] = wordsegment._segmenter.score(keyword)
-    
+
     def process(self, domain):
         matches = set()
 
@@ -24,11 +25,12 @@ class Processor(object):
                 matches.add(keyword)
 
         # ...otherwise, proceed with Wordsegment
-        segments = wordsegment.segment(str(domain).lower().replace(".", " ").replace("-", " "))
-
-        matches.union(set(self.keyword_scores.keys()).intersection(set(segments)))
+        segments = wordsegment.segment(
+            str(domain).lower().replace(".", " ").replace("-", " ")
+        )
+        
+        matches = matches.union(set(self.keyword_scores.keys()).intersection(set(segments)))
         if len(matches) >= self.threshold:
             return matches
         else:
             return None
-    

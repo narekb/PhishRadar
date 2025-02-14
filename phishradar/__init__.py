@@ -8,12 +8,13 @@ from .constants import *
 from .output.logoutputsink import LogOutputSink
 from .output.fileoutputsink import FileOutputSink
 
-proc = None         # Populated within main()
-config = {}         # Populated after YAML file parsing
-output_sinks = []   # Populated after init_output_sinks()
+proc = None  # Populated within main()
+config = {}  # Populated after YAML file parsing
+output_sinks = []  # Populated after init_output_sinks()
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
+
 
 def cert_callback(message, context):
     """CertStream main callback function"""
@@ -27,15 +28,17 @@ def cert_callback(message, context):
     result = proc.process(domain)
     if result is not None:
         for sink in output_sinks:
-            sink.send_output(domain, result)    
+            sink.send_output(domain, result)
+
 
 def on_error(instance, exception):
     logging.error("[!] CertStream error: {}".format(exception))
 
+
 def read_config(filename=DEFAULT_CONFIG):
     """Parses YAML file for configuration"""
     try:
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             new_config = yaml.safe_load(f)
             new_config["keywords"] = set(new_config["keywords"])
             return new_config
@@ -43,6 +46,7 @@ def read_config(filename=DEFAULT_CONFIG):
     except Exception as e:
         logging.error("[!] Failed to open {}. {}".format(filename, e))
         sys.exit(1)
+
 
 def validate_config(config):
     """Checks whether required attributes are set and inserts defaults where possible"""
@@ -90,12 +94,13 @@ def init_output_sinks(config):
     # TODO: Implement file and webhook sinks
     return sinks
 
+
 def main(arguments=()):
     """Program entry point. Reads config file and connects to the CertStream server"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", help="configuration YAML file path", required=True)
     args = parser.parse_args()
-    
+
     config_file = args.config if args.config else DEFAULT_CONFIG
     logger.info("[*] Retrieving configurations from {}".format(config_file))
 
@@ -108,8 +113,15 @@ def main(arguments=()):
     global output_sinks
     output_sinks = init_output_sinks(config)
 
-    logger.info("[*] Begin monitoring for the following keywords: {}".format(config[ATTR_KEYWORDS]))
-    certstream.listen_for_events(cert_callback, on_error=on_error, url=config[ATTR_CERTSTREAM_URL])
+    logger.info(
+        "[*] Begin monitoring for the following keywords: {}".format(
+            config[ATTR_KEYWORDS]
+        )
+    )
+    certstream.listen_for_events(
+        cert_callback, on_error=on_error, url=config[ATTR_CERTSTREAM_URL]
+    )
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -2,7 +2,7 @@ DEFAULT_CONFIG = "config.yaml"
 DEFAULT_CERTSTREAM = "wss://certstream.calidog.io/"
 DEFAULT_THRESHOLD = 1
 
-#Configuration attributes
+# Configuration attributes
 ATTR_CERTSTREAM_URL = "certstream_url"
 ATTR_KEYWORDS = "keywords"
 ATTR_WHITELIST = "whitelist"

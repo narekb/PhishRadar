@@ -10,23 +10,18 @@ For better customization, a minimal threshold of matching keywords can be set.
 The idea was born after encountering phishing attacks and malware Command-and-Control communication involving domains impersonating Armenian government bodies ([1](https://k3yp0d.blogspot.com/2024/10/something-phishy-is-happening-in-armenia.html), [2](https://research.checkpoint.com/2023/operation-silent-watch-desktop-surveillance-in-azerbaijan-and-armenia/)).
 
 ## Installation and usage
-The package is not yet distributed on PyPI, so installation can be done via:
 ```
-pip install -r requirements.txt
-```
-The utility can be executed (from outside the `phishradar` directory) via:
-```
-python -m phishradar --config ./config.yaml
+pip install phishradar
+phishradar --config ./config.yaml
 ```
 
 ## Sample configuration
 ```yaml
 certstream_url: wss://certstream.calidog.io/
 keywords:
-  - bank
-  - gov
-  - police
-  - ministry
+  - test
+  - keyword
+  - yourbrand
 whitelist:
   - exclude
   - these
@@ -37,6 +32,6 @@ output:
 ```
 
 ## Further work
-- [ ] Implement file and webhook sinks
+- [ ] Implement webhook sinks
 - [ ] Try out alternative threshold mechanism (e.g. weighted keywords)
 - [ ] Experiment with word segmentation via a Small Language Model
