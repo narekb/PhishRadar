@@ -10,6 +10,8 @@ ATTR_OUTPUT = "output"
 ATTR_OUTPUT_CONSOLE = "console"
 ATTR_OUTPUT_FILE = "file"
 ATTR_OUTPUT_WEBHOOK = "webhook"
+ATTR_OUTPUT_WEBHOOK_URL = "url"
+ATTR_OUTPUT_WEBHOOK_BODY = "body"
 ATTR_THRESHOLD = "threshold"
 
 # This value was discovered experimentally by comparing scores of common and rare words (e.g. brand names)

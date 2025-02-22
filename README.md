@@ -25,13 +25,20 @@ keywords:
 whitelist:
   - exclude
   - these
-threshold: 1
+threshold: 1  # Number of matched keywords to alert for
 output:
   console: True
   file: output.log
+  # Example use case of a webhook sink - a Telegram bot for alerting
+  # The following templates are supported in messages (URL and body):
+  #   $domain - defanged domain name
+  #   $matches_list - bullet point list of matched keywords
+  #   $matches_comma - comma-separated string of matched keywords
+  webhook:
+    url: "https://api.telegram.org/bot<INSERT_YOUR_BOT_TOKEN>/sendMessage"
+    body: '{"chat_id": "<INSERT_YOUR_CHAT_ID>", "parse_mode": "html", "text": "<b>$domain</b> contains: <i>$matches_list</i>"}'
 ```
 
 ## Further work
-- [ ] Implement webhook sinks
 - [ ] Try out alternative threshold mechanism (e.g. weighted keywords)
 - [ ] Experiment with word segmentation via a Small Language Model

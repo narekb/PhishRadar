@@ -1,12 +1,14 @@
 import sys
 import yaml
 import logging
+import asyncio
 import argparse
 import certstream
 from .processor import Processor
 from .constants import *
 from .output.logoutputsink import LogOutputSink
 from .output.fileoutputsink import FileOutputSink
+from .output.weboutputsink import WebOutputSink
 
 proc = None  # Populated within main()
 config = {}  # Populated after YAML file parsing
@@ -28,10 +30,15 @@ def cert_callback(message, context):
     result = proc.process(domain)
     if result is not None:
         for sink in output_sinks:
-            sink.send_output(domain, result)
+            # Special case for WebOutputSink - the send_output() method is declared as async, 
+            # in order to issue a non-blocking request
+            if isinstance(sink, WebOutputSink): 
+                asyncio.run(sink.send_output(domain, result))
+            else:
+                sink.send_output(domain, result)
 
 
-def on_error(instance, exception):
+def on_error(instance, exception=None):
     logging.error("[!] CertStream error: {}".format(exception))
 
 
@@ -51,7 +58,7 @@ def read_config(filename=DEFAULT_CONFIG):
 def validate_config(config):
     """Checks whether required attributes are set and inserts defaults where possible"""
     if ATTR_KEYWORDS not in config or len(config[ATTR_KEYWORDS]) == 0:
-        logging.error("[!] {} not found in configuration file.".format(ATTR_KEYWORDS))
+        logging.error("[!] Keywords not configured.".format(ATTR_KEYWORDS))
         sys.exit(1)
 
     # By default, whitelist is empty
@@ -66,6 +73,11 @@ def validate_config(config):
     if ATTR_OUTPUT not in config:
         console_config = {ATTR_OUTPUT_CONSOLE: True}
         config[ATTR_OUTPUT] = console_config
+
+    # If a webhook sink is specified, make sure it has at least a URL
+    if ATTR_OUTPUT_WEBHOOK in config and ATTR_OUTPUT_WEBHOOK_URL not in config[ATTR_OUTPUT_WEBHOOK]:
+        logging.error("[!] URL not specified for webhook sink.")
+        sys.exit(1)
 
     # Default threshold is 1
     if ATTR_THRESHOLD not in config or int(config[ATTR_THRESHOLD]) <= 0:
@@ -91,12 +103,33 @@ def init_output_sinks(config):
             logger.error(e)
             sys.exit(1)
 
-    # TODO: Implement file and webhook sinks
+    # Type 3: Webhook output
+    if ATTR_OUTPUT_WEBHOOK in config[ATTR_OUTPUT]:
+        url = config[ATTR_OUTPUT][ATTR_OUTPUT_WEBHOOK][ATTR_OUTPUT_WEBHOOK_URL]
+        body = config[ATTR_OUTPUT][ATTR_OUTPUT_WEBHOOK][ATTR_OUTPUT_WEBHOOK_BODY] if ATTR_OUTPUT_WEBHOOK_BODY in config[ATTR_OUTPUT][ATTR_OUTPUT_WEBHOOK] else None
+        sinks.append(WebOutputSink(url, body))
+
     return sinks
+
+
+def show_banner():
+    banner = r'''
+  _____  _     _     _     _____           _            
+ |  __ \| |   (_)   | |   |  __ \         | |           
+ | |__) | |__  _ ___| |__ | |__) |__ _  __| | __ _ _ __ 
+ |  ___/| '_ \| / __| '_ \|  _  // _` |/ _` |/ _` | '__|
+ | |    | | | | \__ \ | | | | \ \ (_| | (_| | (_| | |   
+ |_|    |_| |_|_|___/_| |_|_|  \_\__,_|\__,_|\__,_|_|   
+                                                        
+                                                                                                          
+(c) 2025 Narek Babajanyan
+'''
+    print(banner)
 
 
 def main(arguments=()):
     """Program entry point. Reads config file and connects to the CertStream server"""
+    show_banner()
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", help="configuration YAML file path", required=True)
     args = parser.parse_args()

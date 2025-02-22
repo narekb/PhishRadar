@@ -5,7 +5,7 @@ with open("README.md", "r") as mdf:
 
 setup(
     name="phishradar",
-    version="0.1.post2",
+    version="0.2",
     description="Phishing domain detection from Certificate Transparency logs.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -22,7 +22,7 @@ setup(
         "Topic :: Security"
     ],
     python_requires=">=3.13",
-    install_requires=["certstream", "PyYAML", "wordsegment"],
+    install_requires=["certstream", "PyYAML", "wordsegment", "aiohttp"],
     packages=find_packages(),
     include_package_data=True,
     entry_points = {
