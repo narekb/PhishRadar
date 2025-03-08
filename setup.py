@@ -5,7 +5,7 @@ with open("README.md", "r") as mdf:
 
 setup(
     name="phishradar",
-    version="0.2",
+    version="0.3",
     description="Phishing domain detection from Certificate Transparency logs.",
     long_description=long_description,
     long_description_content_type="text/markdown",

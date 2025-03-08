@@ -1,4 +1,5 @@
 import sys
+import ssl
 import yaml
 import logging
 import asyncio
@@ -83,6 +84,10 @@ def validate_config(config):
     if ATTR_THRESHOLD not in config or int(config[ATTR_THRESHOLD]) <= 0:
         config[ATTR_THRESHOLD] = DEFAULT_THRESHOLD
 
+    # Be default, verify secure connection with certstream-server
+    if ATTR_DISABLE_TLS not in config:
+        config[ATTR_DISABLE_TLS] = False
+
     return config
 
 
@@ -151,8 +156,12 @@ def main(arguments=()):
             config[ATTR_KEYWORDS]
         )
     )
+
+    # Disable SSL/TLS verification, if configured.
+    ssl_opt = {"cert_reqs":ssl.CERT_NONE} if config[ATTR_DISABLE_TLS] else None
+
     certstream.listen_for_events(
-        cert_callback, on_error=on_error, url=config[ATTR_CERTSTREAM_URL]
+        cert_callback, on_error=on_error, url=config[ATTR_CERTSTREAM_URL], sslopt=ssl_opt
     )
 
 
